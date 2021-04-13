@@ -11,7 +11,8 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 function generateRandomString() {
-  let r = Math.random().toString(36).substring(7);
+  return  Math.random().toString(36).substring(7);
+  // return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6);
 }
 
 app.get("/", (req, res) => {
@@ -39,8 +40,10 @@ app.get("/hello", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  const randomStr = generateRandomString();
+  urlDatabase[randomStr] = req.body.longURL; 
+  const templateVars = { shortURL: randomStr, longURL: /* What goes here? */ req.body.longURL};
+  res.render("urls_show", templateVars);         
 });
 
 app.listen(PORT, () => {

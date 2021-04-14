@@ -46,12 +46,20 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
+  console.log(Object.keys(req.params))
   delete urlDatabase[req.params.shortURL]; 
   const templateVars = {urls: urlDatabase};
   res.render("urls_index", templateVars); 
 });
        
-
+app.post("/urls/:id",(req,res) => {
+// console.log(Object.keys(req.params))
+// console.log(req.params.id)
+// console.log(req.body.Edit)
+urlDatabase[req.params.id] = req.body.Edit;
+const templateVars = {urls: urlDatabase};
+res.render("urls_index", templateVars); 
+})
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);

@@ -30,7 +30,7 @@ app.get("/urls", (req, res) => {
 
 //creat a new Url page
 app.get("/urls/new", (req, res) => {
-  // console.log("req.cookies.userId: " +req.cookies.userId)
+  console.log("req.cookies.userId: " +req.cookies.userId)
   if (!req.cookies.userId) {
     res.redirect("/login");
   }  
@@ -52,9 +52,10 @@ app.get("/login", (req, res) => {
 
 //redirect to a specific url page
 app.get("/urls/:shortURL", (req, res) => {
-  console.log("res.body.shortURL :"+ res.body.shortURL)
-  console.log("res.params.shortURL :"+ res.params.shortURL)
-  console.log("urlDatabase: " + urlDatabase[req.params.shortURL])
+  // console.log(req.params)
+  // console.log("req.params.shortURL :"+ req.params.shortURL)
+  console.log("urlDatabase: ")
+  console.log( urlDatabase[req.params.shortURL])
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user:users[req.cookies.userId]};
   res.render("urls_show", templateVars);
 });
@@ -72,8 +73,9 @@ app.post("/urls", (req, res) => {
   newUrl.longURL = req.body.longURL;
   newUrl.userId = req.cookies.userId;
   urlDatabase[randomStr] = newUrl; 
-  const templateVars = { shortURL: randomStr, longURL: urlDatabase[randomStr].longURL, user:users[req.cookies.userId]};
-  res.render("urls_show", templateVars);
+  // const templateVars = { shortURL: randomStr, longURL: urlDatabase[randomStr].longURL, user:users[req.cookies.userId]};
+  // res.render("urls_show", templateVars);
+  res.redirect("/urls");
 });
 
 //delete a exist shortUrl
@@ -124,7 +126,6 @@ app.post("/register", (req,res) => {
         res.status(400);
         res.write('400 Email is already register');
         res.end();
-        
       };
   };
   if(req.body.email === '' || req.body.password === '') {

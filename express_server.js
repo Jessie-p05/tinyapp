@@ -55,9 +55,10 @@ app.get("/urls/new", (req, res) => {
   // console.log("req.cookies.userId: " +req.cookies.userId)
   if (!req.cookies.userId) {
     res.redirect("/login");
+    return;
   }  
   const templateVars = { urls: urlDatabase, user:users[req.cookies.userId]}
-  res.render("urls_new",templateVars)
+  res.render("urls_new",templateVars);
 });
 
 //redirect to register page
@@ -105,15 +106,22 @@ app.post("/urls", (req, res) => {
 
 //delete a exist shortUrl
 app.post("/urls/:shortURL/delete", (req, res) => {
-  console.log(Object.keys(req.params))
+  // console.log(Object.keys(req.params))
+  if (!req.cookies.userId) {
+    res.redirect("/login");
+    return;
+  }  
   delete urlDatabase[req.params.shortURL]; 
-  // const templateVars = {urls: urlDatabase, username:null};
-  // res.render("urls_index", templateVars); 
+   
   res.redirect("/urls");
 });
        
 //edit a exist shortUrl
 app.post("/urls/:id",(req,res) => {
+  if (!req.cookies.userId) {
+    res.redirect("/login");
+    return;
+  }  
   urlDatabase[req.params.id] = req.body.Edit;
   res.redirect("/urls");
 })
@@ -131,6 +139,7 @@ app.post("/login", (req,res) =>{
   } else if (users[user].password === req.body.password) {
       res.cookie('userId', user)
       res.redirect("/urls");
+      return;
   } else {
     res.status(403);
     res.write('403 Invalid password');

@@ -8,8 +8,7 @@ app.use(cookieSession({
   keys: ['key1', 'key2']
 }));
 const bcrypt = require('bcrypt');
-// const password = "purple-monkey-dinosaur"; // found in the req.params object
-// const hashedPassword = bcrypt.hashSync(password, 10);
+const {getUserByEmail} = require("./helpers.js")
 
 app.set('view engine', 'ejs');
 
@@ -24,14 +23,14 @@ const urlDatabase = {
 const users = {};
 
 //a function to check the status of the user
-const getUserByEmail = (email,object) => {
-  for (let key in object) {
-    if (email ===  object[key].email) {
-    return key;
-    }
-  return false;
-  }
-}
+// const getUserByEmail = (email,object) => {
+//   for (let key in object) {
+//     if (email ===  object[key].email) {
+//     return object[key];
+//     }
+//   return false;
+//   }
+// }
 //get all the urls that created by a user
 const  urlsForUser= (id,urlDatabase) => {
   const urlsByUser = {};
@@ -144,10 +143,10 @@ app.post("/login", (req,res) =>{
     res.status(403);
     res.write('403 Email is not register yet');
     res.end();
-  } else if (bcrypt.compareSync(req.body.password, users[user].password)) {
+  } else if (bcrypt.compareSync(req.body.password, user.password)) {
     // users[user].password === req.body.password;
       // res.cookie('userId', user)
-      req.session.user_id = user;
+      req.session.user_id = user.id;
       res.redirect("/urls");
       return;
   } else {

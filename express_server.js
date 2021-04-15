@@ -15,6 +15,26 @@ const urlDatabase = {
 };
 const users = {};
 
+//a function to check the status of the user
+const getUserByEmail = (email,object) => {
+  for (let key in object) {
+    if (email ===  object[key].email) {
+    return key;
+    }
+  return false;
+  }
+}
+//get all the urls that created by a user
+const  urlsForUser= (id,urlDatabase) => {
+  const urlsByUser = {};
+  for (let url in urlDatabase) {
+    if (urlDatabase[url].userId === id) {
+      urlsByUser[url] = urlDatabase[url];
+    }
+  }
+  return urlsByUser;
+} 
+
 function generateRandomString() {
   return  Math.random().toString(36).substring(7);
   // return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 6);
@@ -22,15 +42,17 @@ function generateRandomString() {
 
 //homepage
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user:users[req.cookies.userId]};
-  console.log("users:"+ users)
-  console.log( users)
+  const urlsByUser = urlsForUser(req.cookies.userId, urlDatabase)
+  const templateVars = { urls: urlsByUser, user:users[req.cookies.userId]};
+  // console.log(urlDatabase)
+  // console.log("urlsById")
+  // console.log( urlsByUser)
   res.render("urls_index", templateVars);
 });
 
 //creat a new Url page
 app.get("/urls/new", (req, res) => {
-  console.log("req.cookies.userId: " +req.cookies.userId)
+  // console.log("req.cookies.userId: " +req.cookies.userId)
   if (!req.cookies.userId) {
     res.redirect("/login");
   }  
@@ -54,8 +76,11 @@ app.get("/login", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   // console.log(req.params)
   // console.log("req.params.shortURL :"+ req.params.shortURL)
-  console.log("urlDatabase: ")
-  console.log( urlDatabase[req.params.shortURL])
+  // // console.log("urlDatabase: ")
+  // console.log( urlDatabase[req.params.shortURL])
+
+  // const urlsByUser = urlsForUser(req.cookies.userId,urlDatabase)
+  // const templateVars = { urls: urlsByUser, user:users[req.cookies.userId]};
   const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL, user:users[req.cookies.userId]};
   res.render("urls_show", templateVars);
 });
@@ -93,25 +118,26 @@ app.post("/urls/:id",(req,res) => {
   res.redirect("/urls");
 })
 
+
+
 //login to an account
 app.post("/login", (req,res) =>{
   // console.log("req.body:"+req.body.username)
-  for (let id in users) {
-    if (users[id].email !== req.body.email) {
-      res.status(403);
-      res.write('403 Email is not register yet');
-      res.end();
-    } else if (users[id].email === req.body.email && users[id].password === req.body.password) {
-      res.cookie('userId', id)
+  const user = getUserByEmail(req.body.email, users);
+  if (!user) {
+    res.status(403);
+    res.write('403 Email is not register yet');
+    res.end();
+  } else if (users[user].password === req.body.password) {
+      res.cookie('userId', user)
       res.redirect("/urls");
-    } else {
-      res.status(403);
-      res.write('403 Invalid password');
-      res.end();
-
-    }
+  } else {
+    res.status(403);
+    res.write('403 Invalid password');
+    res.end();
   }
 })
+
 
 //logout from an account
 app.post("/logout", (req,res) =>{

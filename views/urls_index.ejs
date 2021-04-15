@@ -15,18 +15,20 @@
   <main style="margin: 1em;">
     <h3>My URLs</h3>
     <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Short URL</th>
-          <th scope="col">Long URL</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% for(let url in urls) { %>
-          
-          <tr>
+      <% if(!user) {  %>
+      <h3 class="text-center">Please <a href="/login">log in</a>  </h3>
+        <% } else {%>
+          <thead>
+            <tr>
+              <th scope="col">Short URL</th>
+              <th scope="col">Long URL</th>
+              <th scope="col">Edit</th>
+              <th scope="col">Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+            <% for(let url in urls) { %>
             <td><%= url %></td>
             <td><%= urls[url].longURL %></td>
             <td><a href="/urls/<%= url %>" type="button" class="btn btn-outline-primary">Edit</a></td> 
@@ -36,7 +38,7 @@
            </form>
             </td> 
             </tr>
-         
+            <% } %>
         <% } %>
       </tbody>
     </table>

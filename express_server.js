@@ -23,6 +23,7 @@ function generateRandomString() {
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, user:users[req.cookies.userId]};
+  console.log(users)
   res.render("urls_index", templateVars);
 });
 
@@ -34,6 +35,11 @@ app.get("/urls/new", (req, res) => {
 app.get("/register", (req, res) => {
   const templateVars = { urls: urlDatabase, user:users[req.cookies.userId] }
   res.render("urls_registration",templateVars);
+});
+
+app.get("/login", (req, res) => {
+  const templateVars = { urls: urlDatabase, user:users[req.cookies.userId] }
+  res.render("login",templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -67,19 +73,22 @@ app.post("/urls/:id",(req,res) => {
 
 app.post("/login", (req,res) =>{
   // console.log("req.body:"+req.body.username)
-  res.cookie('username', req.body.username)
-  // const templateVars = {urls: urlDatabase, username: req.cookies["username"]}
-  // console.log(templateVars);
-  // res.render("urls_index", templateVars);
-  res.redirect("/urls");
+  for (let id in users) {
+    if (users[id].email !== req.body.email) {
+      res.status(403);
+      res.send('403 Email is not register yet');
+    } else if (users[id].email === req.body.email && users[id].password === req.body.password) {
+      res.cookie('userId', id)
+      res.redirect("/urls");
+    } 
+    res.status(403);
+    res.write('403 Invalid password');
+    res.end();
+  }
 })
 
 app.post("/logout", (req,res) =>{
-  // console.log("req.body:"+req.body.username)
-  res.clearCookie('username');
-  // const templateVars = {urls: urlDatabase, username:null}
-  // console.log(templateVars);
-  // res.render("urls_index", templateVars);
+  res.clearCookie('userId');
   res.redirect("/urls");
 })
 
@@ -87,12 +96,15 @@ app.post("/register", (req,res) => {
   for(let id in users) {
     if (users[id].email === req.body.email){
         res.status(400);
-        res.send('400 Email is already register');
+        res.write('400 Email is already register');
+        res.end();
+        
       };
   };
   if(req.body.email === '' || req.body.password === '') {
     res.status(400);
-    res.send('400 Invalid email or password');
+    res.write('400 Invalid email or password');
+    res.end();
   } 
   const userId = Math.random().toString(20).substring(7);
   const userInfo = {};
@@ -103,7 +115,6 @@ app.post("/register", (req,res) => {
   // console.log("user:" + users[userId].id);
   // console.log('req.body ', req.body)
   res.cookie('userId',userId);
-  // console.log('Cookies: ', req.cookies)
   res.redirect("/urls")
 })
 

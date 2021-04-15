@@ -17,19 +17,11 @@
       <div class="navbar-nav">
         <% if (user) { %>
           <form action="/logout" method="POST">
-            <p>Welcome,<%= user.email %><input type="submit" value="sign out"></p>
+            <p>Welcome, <%= user.email %> <input type="submit" value="sign out"  class="btn btn-secondary"></p>
           </form>
           <% } else {%>
-            <form action="/login" method="POST">
-              <div class="form-horizontal">
-                <input type="text" class="form-control" placeholder="username" aria-describedby="button-addon2"
-                  name="username">
-                <div class="input-group-append">
-                  <button type="submit" class="btn btn-outline-secondary" id="button-addon2">Login</button>
-                </div>
-
-              </div>
-            </form>
+            <a href="/login" class="nav-item nav-link">Log in</a>
+            <a href="/register" class="nav-item nav-link">Register</a>
             <% } %>
 
       </div>

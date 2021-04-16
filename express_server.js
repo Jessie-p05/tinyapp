@@ -107,7 +107,6 @@ app.post("/urls/:id", (req, res) => {
     res.redirect("/login");
     return;
   }
-  // console.log(req.params);
   urlDatabase[req.params.id].longURL = req.body.Edit;
   res.redirect("/urls");
 });
